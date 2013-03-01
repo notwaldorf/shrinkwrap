@@ -9,6 +9,7 @@ $(function() {
                   };
 
   var CARD_STORAGE = "sizeit.cards";
+  var IS_SERVER_OK = false;
   var columns = [
                     '#column-xs',
                     '#column-s',
@@ -16,6 +17,7 @@ $(function() {
                     '#column-l',
                     '#column-xl',
                     '#column-todo']
+  var connection;
 
   $(document).ready(makeThingsGo);
 
@@ -42,8 +44,9 @@ $(function() {
       $("#new-card-box").hide('fast');
     });
 
-    $('#save-card').click(addNewCard);
-
+    $('#save-card').click(function(){
+      addNewCard($('#card-text').val());
+    });
     // bind all the future added icons too
     $(document).on("click", "i.remove", function(){
       var jThis = $(this);
@@ -82,21 +85,27 @@ $(function() {
     // WebSockets 
     // ==========================
 
-    // open connection
-    var connection = new WebSocket('ws://127.0.0.1:9000');
+    // open connection!
+    connection = new WebSocket('ws://127.0.0.1:9000');
     
     connection.onopen = function () {
         showServerUp();
+        IS_SERVER_OK = true;
     };
 
     connection.onclose = function () {
         showServerDown();
+        IS_SERVER_OK = false;
     };
 
     connection.onerror = function () {
         showServerDown();
-    };
-    
+        IS_SERVER_OK = false;
+    }; 
+
+    connection.onmessage = function (message) {
+      console.log("received from server", message);
+    }
   }
 
 
@@ -104,40 +113,46 @@ $(function() {
   // Display cards
   // ==========================
 
-  function addNewCard() {
-    var contents = $('#card-text').val().replace("\n", "<br/>");
-
+  function addNewCard(name) {
     // todo: validations
     // no duplicate names, no empties
-    putSockInDrawer(contents, CardSizes.TO_DO);
+    if (IS_SERVER_OK)
+    {
+      connection.send(JSON.stringify({action:"add", name:name, size:CardSizes.TO_DO}));
+    }
+    else
+    {
+      putSockInDrawer(name, CardSizes.TO_DO);  
+    }
     $('#column-todo').append('<li class="card">' +
         '<i class="icon-remove card-btn remove"></i><span>' + 
-        contents + '</span></li>');
+        name + '</span></li>');
     $("#new-card-box").hide('fast');
   }
 
-  function removeCard(name, size) {
-    var cards = safeGetStorage();
-
-    // todo: when moving is saved, also compare size matches
-    var index = findCard(cards, name);
-    if (index != -1) cards.remove(index);
-    localStorage[CARD_STORAGE] = JSON.stringify(cards);
-  }
-
-  function updateCardSize(name, newSize) {
-    var cards = safeGetStorage();
-    var index = findCard(cards, name);
-    cards[index].size = newSize;
-    localStorage[CARD_STORAGE] = JSON.stringify(cards);
-  }
-
-  function findCard(cards, name) {
-    for (var i = 0; i < cards.length; i++) {
-      if (cards[i].text == name) return i;
+  function removeCard(name, size)
+  {
+    if (IS_SERVER_OK)
+    {
+      connection.send(JSON.stringify({action:"delete", name:name, size:size}));
     }
-    return -1;
-  }
+    else
+    {
+      removeSockFromDrawer(name, size);  
+    }
+  } 
+
+  function updateCardSize(name, newSize)
+  {
+    if (IS_SERVER_OK)
+    {
+      connection.send(JSON.stringify({action:"resize", name:name, size: newSize}));
+    }
+    else
+    {
+      stretchSockInDrawer(name, size);  
+    }
+  } 
 
   function displayCards(cards) {
     // first clear everything
@@ -157,7 +172,7 @@ $(function() {
   }
 
   // ==========================
-  // Save and load cards
+  // Save and load cards from local storage
   // ==========================
 
   function loadAllStorage() {
@@ -174,6 +189,29 @@ $(function() {
     var cards = safeGetStorage();
     cards.push({text: sock, size: size});
     localStorage[CARD_STORAGE] = JSON.stringify(cards);
+  }
+
+  function removeSockFromDrawer(name, size) {
+    var cards = safeGetStorage();
+
+    // todo: when moving is saved, also compare size matches
+    var index = findCard(cards, name);
+    if (index != -1) cards.remove(index);
+    localStorage[CARD_STORAGE] = JSON.stringify(cards);
+  }
+
+  function stretchSockInDrawer(name, newSize) {
+    var cards = safeGetStorage();
+    var index = findCard(cards, name);
+    cards[index].size = newSize;
+    localStorage[CARD_STORAGE] = JSON.stringify(cards);
+  }
+
+  function findCard(cards, name) {
+    for (var i = 0; i < cards.length; i++) {
+      if (cards[i].text == name.replace("↵", "\n")) return i;
+    }
+    return -1;
   }
 
   function hasStorageSkills() {
@@ -193,7 +231,7 @@ $(function() {
   }
 
   // ==========================
-  // Web Sockets stuff
+  // Server status
   // ==========================
   function showServerUp() {
     $('#server-ok').show();
@@ -209,7 +247,6 @@ $(function() {
 
     loadAllStorage();
   }
-
   // ==========================
   // Helper elves
   // ==========================
