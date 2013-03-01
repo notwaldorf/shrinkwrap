@@ -24,6 +24,9 @@ h1, h2.big {
 	margin-top: 40px;
 }
 
+.draggable li span:hover {
+	cursor: text !important;
+}
 /*************************
  * column of cards 
  *************************/
