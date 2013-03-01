@@ -82,7 +82,7 @@ $(function() {
   // ==========================
 
   function addNewCard() {
-    var contents = $('#card-text').val();
+    var contents = $('#card-text').val().replace("\n", "<br/>");
 
     // todo: validations
     // no duplicate names, no empties
