@@ -94,23 +94,18 @@ h1, h2.big {
 	margin-bottom: 5px;
 }
 
-.link-btn, .card-btn, .move{
+.link-btn, .card-btn{
 	text-decoration: none;
 	color: #b9b9b9;
 	cursor: pointer;
 }
 
 .card-btn {
-	z-index: 100;
 	float: right;
 }
 
-.link-btn:hover, i:hover {
+.link-btn:hover, .card-btn:hover{
 	color: #599ecd;
-}
-
-a {
-	z-index: 100;
 }
 
 /*************************
