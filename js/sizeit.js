@@ -37,22 +37,32 @@ $(function() {
 
   $('#save-card').click(addNewCard);
 
+  // bind all the future added icons too
+  $(document).on("click", "i.remove", function(){
+    var jThis = $(this);
+    var text = jThis.parent().text();
+    var column = jThis.parent().parent().attr('id').substr(7);
+    $(this).parent().remove();
+    removeCard(text, column);
+  });  
+
   // ==========================
   // Drag and drop
   // ==========================
 
   $( "[id^='column-']" ).sortable({
-    connectWith: ".draggable",
-    items: 'li:not(.no-drag)',
-    opacity: 0.6,
-    placeholder: 'ghost',
-    forcePlaceholderSize: true,
-    'start': function(event, ui) {
-    	// for some reason the placeholder style isn't actually applied
-    	ui.placeholder.css("background-color", "transparent");
-      ui.placeholder.css("border-style", "dashed");
-    }
-  }).disableSelection();
+      connectWith: ".draggable",
+      items: 'li:not(.no-drag)',
+      distance: 5,
+      opacity: 0.6,
+      placeholder: 'ghost',
+      forcePlaceholderSize: true,
+      'start': function(event, ui) {
+        // for some reason the placeholder style isn't actually applied
+        ui.placeholder.css("background-color", "transparent");
+        ui.placeholder.css("border-style", "dashed");
+      }
+    });
 
   // for testing only
   if (localStorage[CARD_STORAGE] == undefined)
@@ -67,9 +77,28 @@ $(function() {
 
   function addNewCard() {
     var contents = $('#card-text').val();
+
+    // todo: validations
+    // no duplicate names, no empties
     putSockInDrawer(contents, CardSizes.TO_DO);
-    $('#column-todo').append('<li class="card">'+ contents + '</li>');
+    $('#column-todo').append('<li class="card">' +
+        '<i class="icon-remove card-btn remove"></i>' + 
+        contents + '</li>');
     $("#new-card-box").hide('fast');
+  }
+
+  function removeCard(name, size) {
+    var cards = safeGetStorage();
+
+    // todo: when moving is saved, also compare size matches
+    for (var i = 0; i < cards.length; i++) {
+      if (cards[i].text == name)
+      {
+        cards.remove(i);
+        break;
+      }  
+    }
+    localStorage[CARD_STORAGE] = JSON.stringify(cards);
   }
 
   function displayCards(cards) {
@@ -84,7 +113,9 @@ $(function() {
 
     for (var i = 0; i < cards.length; i++) {
       var jCol = $('#column-' + cards[i].size);
-      jCol.append('<li class="card">'+ cards[i].text + '</li>');  
+      jCol.append('<li class="card">' +
+        '<i class="icon-remove card-btn remove"></i>' + 
+        cards[i].text + '</li>');  
     }
   }
 
@@ -93,13 +124,7 @@ $(function() {
   // ==========================
 
   function loadAllStorage() {
-    var stored = localStorage[CARD_STORAGE];  
-
-    if (stored == undefined)
-      var cards = []
-    else
-      cards = JSON.parse(stored);
-
+    var cards = safeGetStorage();
     displayCards(cards);
   }
 
@@ -109,12 +134,7 @@ $(function() {
   }
 
   function putSockInDrawer(sock, size) {
-    var stored = localStorage[CARD_STORAGE];
-    if (stored == undefined)
-      var cards = []
-    else
-      cards = JSON.parse(stored);
-
+    var cards = safeGetStorage();
     cards.push({text: sock, size: size});
     localStorage[CARD_STORAGE] = JSON.stringify(cards);
   }
@@ -125,6 +145,15 @@ $(function() {
     } catch (e) {
       return false;
     }
+  }
+
+  function safeGetStorage() {
+    var stored = localStorage[CARD_STORAGE];
+    if (stored == undefined)
+      var cards = []
+    else
+      cards = JSON.parse(stored);
+    return cards;
   }
 
   // ==========================
@@ -141,6 +170,13 @@ $(function() {
     localStorage.removeItem(CARD_STORAGE);
     localStorage[CARD_STORAGE] = JSON.stringify(socks);
   }
+
+  // Array Remove - By John Resig (MIT Licensed)
+  Array.prototype.remove = function(from, to) {
+    var rest = this.slice((to || from) + 1 || this.length);
+    this.length = from < 0 ? this.length + from : from;
+    return this.push.apply(this, rest);
+  };
 
 });
 

@@ -6,6 +6,8 @@
 	<link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
 	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
   	<script src="http://code.jquery.com/ui/1.10.1/jquery-ui.js"></script>
+  	<link href="css/font-awesome.min.css" rel="stylesheet" media="screen">
+
   	<script src="js/sizeit.js"></script>
 	
 </head>
@@ -37,15 +39,14 @@
 
 		<ul id="column-todo" class="draggable">
 			<li class="column-title center no-drag">To do</li>
-			<a class="link-btn" href="#" id="add-new-card">sudo new card</a>
+			<a class="link-btn block" href="#" id="add-new-card">sudo new card</a>
 			
 			<div id="new-card-box">
 				<textarea id="card-text"></textarea>
-				<a class="link-btn inline" href="#" id="save-card">save</a>
-				&nbsp;&nbsp;&nbsp;&nbsp;
-				<a class="link-btn inline" href="#" id="cancel-card">cancel</a>
+				<i class="icon-ok icon-large link-btn" id="save-card"></i> &nbsp;&nbsp;
+				<i class="icon-remove icon-large link-btn" id="cancel-card"></i>
 			</div>
-			<a class="link-btn" href="#" id="clear-cards">clear all cards</a>
+			<a class="link-btn block" href="#" id="clear-cards">clear all cards</a>
 		</ul>
 
 	</div>
