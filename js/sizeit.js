@@ -17,64 +17,69 @@ $(function() {
                     '#column-xl',
                     '#column-todo']
 
-  // ==========================
-  // Event handlers
-  // ==========================
+  $(document).ready(makeThingsGo);
 
-  $('#new-card-box').hide();
-
-  $('#add-new-card').click(function(){
-    $("#new-card-box").show('fast');
-    $("#card-text").focus(); 
-  });
-
-  $('#clear-cards').click(clearStorage);
-  
-  $('#cancel-card').click(function(){
-    $('#card-text').val('');
-    $("#new-card-box").hide('fast');
-  });
-
-  $('#save-card').click(addNewCard);
-
-  // bind all the future added icons too
-  $(document).on("click", "i.remove", function(){
-    var jThis = $(this);
-    var text = jThis.parent().text();
-    var column = jThis.parent().parent().attr('id').substr(7);
-    $(this).parent().remove();
-    removeCard(text, column);
-  });  
 
   // ==========================
-  // Drag and drop
+  // Event handlers etc
   // ==========================
+  function makeThingsGo() {
 
-  $( "[id^='column-']" ).sortable({
-      connectWith: ".draggable",
-      items: 'li:not(.no-drag)',
-      distance: 5,
-      opacity: 0.6,
-      placeholder: 'ghost',
-      forcePlaceholderSize: true,
-      start: function(event, ui) {
-        // for some reason the placeholder style isn't actually applied
-        ui.placeholder.css("background-color", "transparent");
-        ui.placeholder.css("border-style", "dashed");
-      },
-      receive: function(event, ui) {
-        var newColumn = ui.item.parent();
-        var text = ui.item.text();
-        var newSize = newColumn.attr('id').substr(7);
-        updateCardSize(text, newSize);
-      }
+    $('#new-card-box').hide();
+
+    $('#add-new-card').click(function(){
+      $("#new-card-box").show('fast');
+      $("#card-text").focus(); 
     });
 
-  // for testing only
-  if (localStorage[CARD_STORAGE] == undefined)
-    knitFakeSocks();
+    $('#clear-cards').click(clearStorage);
+    
+    $('#cancel-card').click(function(){
+      $('#card-text').val('');
+      $("#new-card-box").hide('fast');
+    });
 
-  loadAllStorage();
+    $('#save-card').click(addNewCard);
+
+    // bind all the future added icons too
+    $(document).on("click", "i.remove", function(){
+      var jThis = $(this);
+      var text = jThis.parent().text();
+      var column = jThis.parent().parent().attr('id').substr(7);
+      $(this).parent().remove();
+      removeCard(text, column);
+    });  
+
+    // ==========================
+    // Drag and drop
+    // ==========================
+
+    $( "[id^='column-']" ).sortable({
+        connectWith: ".draggable",
+        items: 'li:not(.no-drag)',
+        distance: 5,
+        opacity: 0.6,
+        placeholder: 'ghost',
+        forcePlaceholderSize: true,
+        start: function(event, ui) {
+          // for some reason the placeholder style isn't actually applied
+          ui.placeholder.css("background-color", "transparent");
+          ui.placeholder.css("border-style", "dashed");
+        },
+        receive: function(event, ui) {
+          var newColumn = ui.item.parent();
+          var text = ui.item.text();
+          var newSize = newColumn.attr('id').substr(7);
+          updateCardSize(text, newSize);
+        }
+      });
+
+    // for testing only
+    if (localStorage[CARD_STORAGE] == undefined)
+      knitFakeSocks();
+
+    loadAllStorage();
+  }
 
 
   // ==========================
