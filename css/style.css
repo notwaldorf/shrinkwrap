@@ -1,0 +1,75 @@
+body {
+	font-family: 'Exo', sans-serif;
+	background-color: #fafafa;
+}
+
+p{
+	font-family: 'PT Sans', sans-serif;"
+}
+
+h1, h2.big {
+	font-size: 50px;
+	font-weight: 200;
+	letter-spacing: -3px;
+	line-height: 80px;
+	margin-bottom: 0;
+	text-shadow: 0px 1px 0px white;
+}
+
+.center {
+	text-align: center;
+}
+
+.suit {
+	overflow: hidden;
+	margin-left: auto;
+	margin-right: auto;
+	width: 1050px;
+	margin-top: 40px;
+}
+/* LISTS */
+.draggable {
+	list-style-type: none;
+	margin: 0;
+	padding: 10px;
+	float: left;
+	border: 1px dashed #b9b9b9;
+	border-radius: 3px;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.draggable li {
+	margin: 5px;
+	padding: 5px;
+	font-size: 14px;
+	width: 120px;
+	cursor: pointer;
+
+	background-color: #fff;
+	border: 1px solid #b9b9b9;
+	border-radius: 3px;
+}
+
+.draggable li:hover {
+	border-color: #58a7ef;
+	box-shadow: 0 0 4px #58a7ef;
+}
+
+/* the column title */
+.draggable .column-title {
+	background-color: #fafafa;
+	border: none;
+	cursor: default;
+	font-weight: 700;
+	font-size: 20px;
+	text-transform: uppercase;
+}
+
+.draggable .column-title:hover {
+	border: none;
+	box-shadow: none;
+	cursor: default;
+} 
+
+
