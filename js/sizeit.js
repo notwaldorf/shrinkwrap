@@ -57,10 +57,16 @@ $(function() {
       opacity: 0.6,
       placeholder: 'ghost',
       forcePlaceholderSize: true,
-      'start': function(event, ui) {
+      start: function(event, ui) {
         // for some reason the placeholder style isn't actually applied
         ui.placeholder.css("background-color", "transparent");
         ui.placeholder.css("border-style", "dashed");
+      },
+      receive: function(event, ui) {
+        var newColumn = ui.item.parent();
+        var text = ui.item.text();
+        var newSize = newColumn.attr('id').substr(7);
+        updateCardSize(text, newSize);
       }
     });
 
@@ -91,14 +97,23 @@ $(function() {
     var cards = safeGetStorage();
 
     // todo: when moving is saved, also compare size matches
-    for (var i = 0; i < cards.length; i++) {
-      if (cards[i].text == name)
-      {
-        cards.remove(i);
-        break;
-      }  
-    }
+    var index = findCard(cards, name);
+    if (index != -1) cards.remove(index);
     localStorage[CARD_STORAGE] = JSON.stringify(cards);
+  }
+
+  function updateCardSize(name, newSize) {
+    var cards = safeGetStorage();
+    var index = findCard(cards, name);
+    cards[index].size = newSize;
+    localStorage[CARD_STORAGE] = JSON.stringify(cards);
+  }
+
+  function findCard(cards, name) {
+    for (var i = 0; i < cards.length; i++) {
+      if (cards[i].text == name) return i;
+    }
+    return -1;
   }
 
   function displayCards(cards) {
@@ -108,8 +123,7 @@ $(function() {
       jCol.children().remove(".card");  
     }
 
-    if (cards == null)
-      return;
+    if (cards == null) return;
 
     for (var i = 0; i < cards.length; i++) {
       var jCol = $('#column-' + cards[i].size);
@@ -149,10 +163,9 @@ $(function() {
 
   function safeGetStorage() {
     var stored = localStorage[CARD_STORAGE];
-    if (stored == undefined)
-      var cards = []
-    else
-      cards = JSON.parse(stored);
+    var cards;
+    if (stored == undefined) cards = []
+    else                     cards = JSON.parse(stored);
     return cards;
   }
 
