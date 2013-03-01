@@ -4,27 +4,17 @@ $(function() {
 
   $('#add-new-card').click(function(){
     $("#new-card-box").show('fast');
+    $("#card-text").focus(); 
   });
+
+  $('#clear-cards').click(clearStorage);
   
   $('#cancel-card').click(function(){
     $('#card-text').val(' ');
     $("#new-card-box").hide('fast');
   });
 
-  function addNewCard() {
-    var contents = $('#card-text').val();
-    $('#column-nosize').append('<li>'+ contents + '</li>')
-    $("#new-card-box").hide('fast');
-  }
-
   $('#save-card').click(addNewCard);
-  $('#card-text').keyup(function(e){
-    if(e.keyCode == 13)
-    {
-      addNewCard();
-    }
-  });
-
 
   // drag and drop
   $( "[id^='column-']" ).sortable({
@@ -39,5 +29,32 @@ $(function() {
       ui.placeholder.css("border-style", "dashed");
     }
   }).disableSelection();
+
+  function addNewCard() {
+    var contents = $('#card-text').val();
+    putSockInDrawer(contents);
+    $('#column-nosize').append('<li>'+ contents + '</li>')
+    $("#new-card-box").hide('fast');
+  }
+
+
+  function hasStorageSkills() {
+    try {
+      return 'localStorage' in window && window['localStorage'] !== null;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function loadAllStorage() {
+  }
+
+  function clearStorage() {
+  }
+
+  function putSockInDrawer(sock) {
+  }
+
+
 });
 

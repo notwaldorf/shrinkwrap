@@ -85,9 +85,9 @@ h1, h2.big {
  	padding-bottom: 10px;
  	margin-bottom: 20px;
  	border-bottom: 1px dashed #b9b9b9;
- }
+}
+
 #card-text {
-	text-align: left;
 	width: 130px;
 	height: 60px;
 	display: block;
