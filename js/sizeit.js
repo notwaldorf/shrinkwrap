@@ -19,6 +19,7 @@ $(function() {
 
   $(document).ready(makeThingsGo);
 
+  window.WebSocket = window.WebSocket || window.MozWebSocket;
 
   // ==========================
   // Event handlers etc
@@ -26,6 +27,8 @@ $(function() {
   function makeThingsGo() {
 
     $('#new-card-box').hide();
+    $('#server-ok').hide();
+    $('#server-down').hide();
 
     $('#add-new-card').click(function(){
       $("#new-card-box").show('fast');
@@ -75,11 +78,25 @@ $(function() {
         }
       });
 
-    // for testing only
-    if (localStorage[CARD_STORAGE] == undefined)
-      knitFakeSocks();
+    // ==========================
+    // WebSockets 
+    // ==========================
 
-    loadAllStorage();
+    // open connection
+    var connection = new WebSocket('ws://127.0.0.1:9000');
+    
+    connection.onopen = function () {
+        showServerUp();
+    };
+
+    connection.onclose = function () {
+        showServerDown();
+    };
+
+    connection.onerror = function () {
+        showServerDown();
+    };
+    
   }
 
 
@@ -173,6 +190,24 @@ $(function() {
     if (stored == undefined) cards = []
     else                     cards = JSON.parse(stored);
     return cards;
+  }
+
+  // ==========================
+  // Web Sockets stuff
+  // ==========================
+  function showServerUp() {
+    $('#server-ok').show();
+    $('#server-down').hide();
+  }
+  function showServerDown() {
+    $('#server-ok').hide();
+    $('#server-down').show();
+
+    // for testing only
+    if (localStorage[CARD_STORAGE] == undefined)
+      knitFakeSocks();
+
+    loadAllStorage();
   }
 
   // ==========================
