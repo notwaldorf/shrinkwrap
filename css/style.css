@@ -16,10 +16,6 @@ h1, h2.big {
 	text-shadow: 0px 1px 0px white;
 }
 
-.center {
-	text-align: center;
-}
-
 .suit {
 	overflow: hidden;
 	margin-left: auto;
@@ -27,7 +23,11 @@ h1, h2.big {
 	width: 1050px;
 	margin-top: 40px;
 }
-/* LISTS */
+
+/*************************
+ * column of cards 
+ *************************/
+
 .draggable {
 	list-style-type: none;
 	margin: 0;
@@ -37,9 +37,10 @@ h1, h2.big {
 	border-radius: 3px;
 	margin-left: 5px;
 	margin-right: 5px;
+	text-align: center;
 }
 
-.draggable li {
+.draggable li{
 	margin: 5px;
 	padding: 5px;
 	font-size: 14px;
@@ -56,7 +57,11 @@ h1, h2.big {
 	box-shadow: 0 0 4px #58a7ef;
 }
 
-/* the column title */
+.card-ghost {
+	background-color: #c8d064;
+	border: none;
+}
+
 .draggable .column-title {
 	background-color: #fafafa;
 	border: none;
@@ -72,4 +77,44 @@ h1, h2.big {
 	cursor: default;
 } 
 
+/*************************
+ * new card
+ *************************/
+ #new-card-box {
+ 	padding-top: 10px;
+ 	padding-bottom: 10px;
+ 	margin-bottom: 20px;
+ 	border-bottom: 1px dashed #b9b9b9;
+ }
+#card-text {
+	text-align: left;
+	width: 130px;
+	height: 60px;
+	display: block;
+	margin-bottom: 5px;
+}
 
+.link-btn{
+	text-decoration: none;
+	color: #b9b9b9;
+	display: block;
+}
+
+.link-btn:hover {
+	color: #599ecd;
+}
+
+/*************************
+ * resets
+ *************************/
+.center {
+	text-align: center;
+}
+
+.block {
+	display: block;
+}
+
+.inline {
+	display: inline;
+}
