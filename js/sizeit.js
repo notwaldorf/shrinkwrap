@@ -57,6 +57,7 @@ $(function() {
     $( "[id^='column-']" ).sortable({
         connectWith: ".draggable",
         items: 'li:not(.no-drag)',
+        cancel: 'span',
         distance: 5,
         opacity: 0.6,
         placeholder: 'ghost',
@@ -93,8 +94,8 @@ $(function() {
     // no duplicate names, no empties
     putSockInDrawer(contents, CardSizes.TO_DO);
     $('#column-todo').append('<li class="card">' +
-        '<i class="icon-remove card-btn remove"></i>' + 
-        contents + '</li>');
+        '<i class="icon-remove card-btn remove"></i><span>' + 
+        contents + '</span></li>');
     $("#new-card-box").hide('fast');
   }
 
@@ -133,8 +134,8 @@ $(function() {
     for (var i = 0; i < cards.length; i++) {
       var jCol = $('#column-' + cards[i].size);
       jCol.append('<li class="card">' +
-        '<i class="icon-remove card-btn remove"></i>' + 
-        cards[i].text + '</li>');  
+        '<i class="icon-remove card-btn remove"></i><span>' + 
+        cards[i].text + '</span></li>');  
     }
   }
 
