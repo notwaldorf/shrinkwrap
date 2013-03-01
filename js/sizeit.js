@@ -150,7 +150,7 @@ $(function() {
     }
     else
     {
-      stretchSockInDrawer(name, size);  
+      stretchSockInDrawer(name, newSize);  
     }
   } 
 
