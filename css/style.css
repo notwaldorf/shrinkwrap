@@ -45,8 +45,8 @@ h1, h2.big {
 	padding: 5px;
 	font-size: 14px;
 	width: 120px;
+	word-wrap: break-word;
 	cursor: pointer;
-
 	background-color: #fff;
 	border: 1px solid #b9b9b9;
 	border-radius: 3px;
