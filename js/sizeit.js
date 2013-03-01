@@ -29,13 +29,13 @@ $(function() {
 
     $('#add-new-card').click(function(){
       $("#new-card-box").show('fast');
+      $('#card-text').val('');
       $("#card-text").focus(); 
     });
 
     $('#clear-cards').click(clearStorage);
     
     $('#cancel-card').click(function(){
-      $('#card-text').val('');
       $("#new-card-box").hide('fast');
     });
 
