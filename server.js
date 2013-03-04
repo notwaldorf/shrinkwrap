@@ -2,22 +2,34 @@ process.title = 'node-shrinkwrap';
 
 var WebSocketServer = require('websocket').server;
 var http = require('http');
-
-var port = 9000;
+var static = require('node-static');
+var Constants = require('./js/helpers');
+var ClientStorage = require('./js/client-storage');
+var file = new(static.Server)('./');
+var fs = require('fs');
 
 var clients = [];
-var cards = [];
+var dbFileName = "./" + ClientStorage.LOCATION;
 
 // HTTP Server
-var httpServer = http.createServer(function(request, response) {});
-httpServer.listen(port, function() {
-    console.log("Server running on: " + port);
-});
+var httpServer = http.createServer(function(request, response) {
+	request.addListener('end', function(){
+		file.serve(request,response);
+	})
+}).listen(Constants.serverPort, function() {
+    console.log("Server running on: " + Constants.serverPort);
 
-cards.push({text: "one", size: "todo", id:"card-0"});
-cards.push({text: "two", size: "todo", id:"card-1"});
-cards.push({text: "three", size: "todo", id:"card-2"});
-cards.push({text: "four", size: "todo", id:"card-3"});
+    // read the db and load anything in it
+    fs.readFile(dbFileName, "utf8", function(err, data) {
+        if (err) {
+            console.log("Can't read db: ", err);
+        }
+        else {
+            ClientStorage.serverCards = JSON.parse(data);
+        }
+    });
+
+});
 
 // Web Sockets Server
 var wsServer = new WebSocketServer({
@@ -27,59 +39,49 @@ var wsServer = new WebSocketServer({
 wsServer.on('request', function(request) {
 	console.log('Received connection from ' + request.origin);
     var connection = request.accept(null, request.origin); 
-    console.log('Connection accepted. Arm the toboggans and sending over any cards'); 
-    connection.sendUTF(JSON.stringify(cards));
+    clients.push(connection);
 
-    // remember this connection
-    var whoAmI = clients.push(connection) - 1;
+    connection.sendUTF(JSON.stringify(ClientStorage.getAll()));
 
     connection.on('message', function(message) {
         if (message.type === 'utf8') { // accept only text
-        	var card = JSON.parse(message.utf8Data);
-        	console.log(' Received Message: ' + message.utf8Data);
+            console.log('Received Message: ' + message.utf8Data);
 
-        	if (card.action == 'add')
-        	{
-        		cards.push(card);
-        	}
-        	if (card.action == 'remove')
-        	{
-        		var index = cards.findCard(card.id);
-        		if (index != -1) cards.remove(index);
-        	}
-        	if (card.action == 'move')
-        	{
-        		var index = cards.findCard(card.id);
-        		if (index != -1) cards[index].size = card.size;
-        	}
+        	var json = JSON.parse(message.utf8Data);
 
-        	// broadcast this
-        	// lame version for now: send everything to all the clients
-        	// makes it easier to display on the client side
-        	var cardsAsText = JSON.stringify(cards);
+            var action = json.action;            
+            var card = json.data;
+
+            switch (action) {
+            case 'add':
+                ClientStorage.add(card);
+                break;
+            case 'remove':
+                ClientStorage.remove(card);
+                break;
+            case 'move':
+                ClientStorage.move(card);
+                break;
+            case 'clear':
+                ClientStorage.clearAll();
+                break;
+            }
+        	
+        	var cardsAsText = JSON.stringify(ClientStorage.getAll());
+
+            // this bit is really gross and i should fix it asap
+            fs.unlink(dbFileName);
+            fs.writeFile(dbFileName, cardsAsText, function(err) {
+                if (err) {
+                    console.log(err);
+                }
+            });
+
+            // broadcast to clients
+            // note: in the future, we can broadcast delta updates if we find a performance problem
         	for (var i = 0; i < clients.length; i++) {
             	clients[i].sendUTF(cardsAsText);
             }
-        	//var json = JSON.stringify({ type:'message', data: message.utf8Data });
-            //for (var i = 0; i < clients.length; i++) {
-            //	clients[i].sendUTF(JSON.stringify(json));
-            //}
         }
     });   
 });
-
-Array.prototype.findCard = function(id) {
-    for (var i = 0; i < this.length; i++) {
-      if (this[i].id == id) return i;
-    }
-    return -1;
-}
-
-// Array Remove - By John Resig (MIT Licensed)
-Array.prototype.remove = function(from, to) {
-	var rest = this.slice((to || from) + 1 || this.length);
-	this.length = from < 0 ? this.length + from : from;
-	return this.push.apply(this, rest);
-};
-
-

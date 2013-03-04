@@ -1,0 +1,220 @@
+$(function() {
+  
+  // set up the web socket
+  var IS_SERVER_OK = false;
+  var connection;
+  window.WebSocket = window.WebSocket || window.MozWebSocket;
+
+  $(document).ready(makeThingsGo);
+
+  // ==========================
+  // Event handlers etc
+  // ==========================
+  function makeThingsGo() {
+
+    $('#new-card-box').hide();
+    $('#server-ok').hide();
+    $('#server-down').hide();
+
+    $('#add-new-card').click(function(){
+      $("#new-card-box").show('fast');
+      $('#card-text').val('');
+      $("#card-text").focus(); 
+    });
+
+    $('#clear-cards').click(clearCards);
+    
+    $('#cancel-card').click(function(){
+      $("#new-card-box").hide('fast');
+    });
+
+    $('#save-card').click(function(){
+      addCard($('#card-text').val());
+      $("#new-card-box").hide('fast');
+    });
+
+    // bind all the future added icons too
+    $(document).on("click", "i.remove", function(){
+      var jThis = $(this);
+      var cardId = jThis.parent().attr('id');
+      removeCard(cardId);
+    });  
+
+    // ==========================
+    // Drag and drop
+    // ==========================
+
+    $( "[id^='column-']" ).sortable({
+        connectWith: ".draggable",
+        items: 'li:not(.no-drag)',
+        cancel: 'span',
+        distance: 5,
+        opacity: 0.6,
+        placeholder: 'ghost',
+        forcePlaceholderSize: true,
+        start: function(event, ui) {
+          // for some reason the placeholder style isn't actually applied
+          ui.placeholder.css("background-color", "transparent");
+          ui.placeholder.css("border-style", "dashed");
+        },
+        receive: function(event, ui) {
+          var newColumn = ui.item.parent();
+          var id = ui.item.attr('id');
+          var newSize = newColumn.attr('id').substr(7);
+          moveCard(id, newSize);
+        }
+      });
+
+    // ==========================
+    // WebSockets 
+    // ==========================
+
+    // open connection!
+    connection = new WebSocket(Constants.serverUrl);
+    
+    connection.onopen = function () {
+        ServerStatus.up();
+        IS_SERVER_OK = true;
+        ClientStorage.IS_LOCAL_ONLY = false;
+    };
+
+    connection.onclose = function () {
+        ServerStatus.down();
+        IS_SERVER_OK = false;
+        ClientStorage.IS_LOCAL_ONLY = true;
+
+        // for testing only
+        if (localStorage[ClientStorage.LOCATION] == undefined)
+        {
+           ClientStorage.generateTestingData();
+        }   
+        DisplayElf.showAll(ClientStorage.getAll());   
+    };
+
+    connection.onerror = function () {
+        ServerStatus.down();
+        IS_SERVER_OK = false;
+        ClientStorage.IS_LOCAL_ONLY = true;
+        
+        // for testing only
+        if (localStorage[ClientStorage.LOCATION] == undefined)
+        {
+           ClientStorage.generateTestingData();
+        }   
+        DisplayElf.showAll(ClientStorage.getAll());   
+    }; 
+
+    connection.onmessage = function (message) {
+      var somethingICanWorkWith = JSON.parse(message.data);
+      DisplayElf.showAll(somethingICanWorkWith);
+    }
+  }
+
+
+
+  // ==========================
+  // Main logic
+  // ==========================
+
+  function addCard(name) {
+    // todo: validations: no duplicate names, no empties
+    var newCard = {text:name, size:Constants.CardSizes.TO_DO};
+
+    if (IS_SERVER_OK)
+    {
+      connection.send(JSON.stringify({action:"add", data:newCard}));
+    }
+    else
+    {
+      newCard = ClientStorage.add(newCard);
+      DisplayElf.show(newCard);
+    }
+  }
+
+  function removeCard(id)
+  {
+    if (IS_SERVER_OK)
+    {
+      connection.send(JSON.stringify({action:"remove", data:id}));
+    }
+    else
+    {
+      ClientStorage.remove(id);  
+      DisplayElf.vaporize(id);
+    }
+  } 
+
+  function moveCard(id, newSize)
+  {
+    var resizedCard = {id:id, size:newSize};
+    if (IS_SERVER_OK)
+    {
+      connection.send(JSON.stringify({action:"move", data:resizedCard}))
+    }
+    else
+    {
+      ClientStorage.move(resizedCard);  
+    }
+  } 
+
+  function clearCards() 
+  {
+    if (IS_SERVER_OK)
+    {
+      connection.send(JSON.stringify({action:"clear"}));
+    }
+    else
+    {
+      ClientStorage.clearAll(); 
+    }
+  }
+  
+
+  // ==========================
+  // Display things
+  // ==========================
+  var DisplayElf = new function(){
+    this.show = function(card) {
+      var jCol = $('#column-' + card.size);
+      jCol.append('<li class="card" id="' + card.id + '">' +
+        '<i class="icon-remove card-btn remove"></i><span>' + 
+        card.text + '</span></li>'); 
+    }
+
+    this.vaporize = function(id) {
+      $('#' + id).remove(); 
+    }
+
+    this.showAll = function(cards) {
+      this.vaporizeAll();
+      if (cards == null) return;
+
+      for (var i = 0; i < cards.length; i++) {
+        this.show(cards[i]);
+      }
+    }
+
+    this.vaporizeAll = function() {
+      for (var i = 0; i < Constants.columns.length; i++) {
+        var jCol = $(Constants.columns[i]);
+        jCol.children().remove(".card");  
+      }
+    }
+  }
+  
+  // ==========================
+  // Server status
+  // ==========================
+  var ServerStatus = new function(){
+    this.up = function() {
+      $('#server-ok').show();
+      $('#server-down').hide();
+    }
+
+    this.down = function() {
+      $('#server-ok').hide();
+      $('#server-down').show();  
+    }
+  }
+});
+
