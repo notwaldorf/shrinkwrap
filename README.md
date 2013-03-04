@@ -13,7 +13,7 @@ if you want, shrink wrap also comes with a node server, making it a glorified ch
     node server.js
 
 ## awesomer usage
-if your team doesn't use t-shirt sizes and uses something else (points, poker, number of cat videos a task is worth, etc.), all you have to do is edit the `index.html` (add/remove/rename the `.draggable` divs), and the `Constants.columns` variable in `helpers.js`. Fact. 
+if your team doesn't use t-shirt sizes and uses something else (points, poker, number of cat videos a task is worth, etc.), all you have to do is edit the `index.html` (add/remove/rename the `.draggable` divs), and the `Constants.columns` variable in `helpers.js`. Fact. (ok and change the width of the `.suit` so that things look pretty. i'll try to fix this soon). 
 
-For that matter, you can even make this into a super light progress tracking app, by making four columns (not started, in progress, to review, done). That's it, that's all. 
+For that matter, you can even make this into a super light progress tracking app, by making four columns (not started, in progress, to review, done). Look at the `progress-tracking` branch for an example. That's it, that's all. 
 
