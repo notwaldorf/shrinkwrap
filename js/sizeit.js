@@ -19,6 +19,8 @@ $(function() {
                     '#column-todo']
   var connection;
 
+  var totalCards = 0;
+
   $(document).ready(makeThingsGo);
 
   window.WebSocket = window.WebSocket || window.MozWebSocket;
@@ -47,13 +49,12 @@ $(function() {
     $('#save-card').click(function(){
       addNewCard($('#card-text').val());
     });
+
     // bind all the future added icons too
     $(document).on("click", "i.remove", function(){
       var jThis = $(this);
-      var text = jThis.parent().text();
-      var column = jThis.parent().parent().attr('id').substr(7);
-      $(this).parent().remove();
-      removeCard(text, column);
+      var cardId = jThis.parent().attr('id');
+      removeCard(cardId);
     });  
 
     // ==========================
@@ -75,9 +76,9 @@ $(function() {
         },
         receive: function(event, ui) {
           var newColumn = ui.item.parent();
-          var text = ui.item.text();
+          var id = ui.item.attr('id');
           var newSize = newColumn.attr('id').substr(7);
-          updateCardSize(text, newSize);
+          moveCard(id, newSize);
         }
       });
 
@@ -105,8 +106,14 @@ $(function() {
 
     connection.onmessage = function (message) {
       console.log("received from server", message);
+      var somethingICanWorkWith = JSON.parse(message.data);
+
+      displayCards(somethingICanWorkWith);
+      
     }
   }
+
+
 
 
   // ==========================
@@ -114,45 +121,61 @@ $(function() {
   // ==========================
 
   function addNewCard(name) {
-    // todo: validations
-    // no duplicate names, no empties
+    // todo: validations: no duplicate names, no empties
+    var newId = generateId();
+
     if (IS_SERVER_OK)
     {
-      connection.send(JSON.stringify({action:"add", name:name, size:CardSizes.TO_DO}));
+      connection.send(JSON.stringify(
+        {action:"add", text:name, size:CardSizes.TO_DO, id:newId}));
+      // we'll display it when the server tells us to
     }
     else
     {
-      putSockInDrawer(name, CardSizes.TO_DO);  
+      var card = {text:name, size:CardSizes.TO_DO, id:newId};
+      putSockInDrawer(card);
+      displayACard(card);
     }
-    $('#column-todo').append('<li class="card">' +
-        '<i class="icon-remove card-btn remove"></i><span>' + 
-        name + '</span></li>');
     $("#new-card-box").hide('fast');
   }
 
-  function removeCard(name, size)
+  function removeCard(id)
   {
     if (IS_SERVER_OK)
     {
-      connection.send(JSON.stringify({action:"delete", name:name, size:size}));
+      connection.send(JSON.stringify({action:"remove", id:id}));
+      // we'll undisplay it when the server tells us to
     }
     else
     {
-      removeSockFromDrawer(name, size);  
+      removeSockFromDrawer(id);  
+      undisplayACard(id);
     }
   } 
 
-  function updateCardSize(name, newSize)
+  function moveCard(id, newSize)
   {
     if (IS_SERVER_OK)
     {
-      connection.send(JSON.stringify({action:"resize", name:name, size: newSize}));
+      connection.send(JSON.stringify({action:"move", id:id, size: newSize}));
+      // we'll move it when the server tells us to
     }
     else
     {
-      stretchSockInDrawer(name, newSize);  
+      stretchSockInDrawer(id, newSize);  
     }
   } 
+  
+  function displayACard(card) {
+    var jCol = $('#column-' + card.size);
+    jCol.append('<li class="card" id="' + card.id + '">' +
+        '<i class="icon-remove card-btn remove"></i><span>' + 
+        card.text + '</span></li>'); 
+  }
+
+  function undisplayACard(id) {
+    $('#' + id).remove();
+  }
 
   function displayCards(cards) {
     // first clear everything
@@ -160,15 +183,13 @@ $(function() {
       var jCol = $(columns[i]);
       jCol.children().remove(".card");  
     }
-
     if (cards == null) return;
 
     for (var i = 0; i < cards.length; i++) {
-      var jCol = $('#column-' + cards[i].size);
-      jCol.append('<li class="card">' +
-        '<i class="icon-remove card-btn remove"></i><span>' + 
-        cards[i].text + '</span></li>');  
+      displayACard(cards[i]);
     }
+
+    totalCards = cards.length;
   }
 
   // ==========================
@@ -183,33 +204,32 @@ $(function() {
   function clearStorage() {
     localStorage.removeItem(CARD_STORAGE);  
     displayCards(null);
+    totalCards = 0;
   }
 
-  function putSockInDrawer(sock, size) {
+  function putSockInDrawer(sock) {
     var cards = safeGetStorage();
-    cards.push({text: sock, size: size});
+    cards.push(sock);
     localStorage[CARD_STORAGE] = JSON.stringify(cards);
   }
 
-  function removeSockFromDrawer(name, size) {
+  function removeSockFromDrawer(id) {
     var cards = safeGetStorage();
-
-    // todo: when moving is saved, also compare size matches
-    var index = findCard(cards, name);
+    var index = findCard(cards, id);
     if (index != -1) cards.remove(index);
     localStorage[CARD_STORAGE] = JSON.stringify(cards);
   }
 
-  function stretchSockInDrawer(name, newSize) {
+  function stretchSockInDrawer(id, newSize) {
     var cards = safeGetStorage();
-    var index = findCard(cards, name);
+    var index = findCard(cards, id);
     cards[index].size = newSize;
     localStorage[CARD_STORAGE] = JSON.stringify(cards);
   }
 
-  function findCard(cards, name) {
+  function findCard(cards, id) {
     for (var i = 0; i < cards.length; i++) {
-      if (cards[i].text == name.replace("↵", "\n")) return i;
+      if (cards[i].id == id) return i;
     }
     return -1;
   }
@@ -250,13 +270,18 @@ $(function() {
   // ==========================
   // Helper elves
   // ==========================
+  function generateId() {
+    var id = "card-" + totalCards;
+    totalCards = totalCards + 1;
+    return id;
+  }
 
   function knitFakeSocks() {
     var socks = [];
-    socks.push({text: "one", size: CardSizes.XS});
-    socks.push({text: "two", size: CardSizes.TO_DO});
-    socks.push({text: "three", size: CardSizes.TO_DO});
-    socks.push({text: "four", size: CardSizes.TO_DO});
+    socks.push({text: "one", size: CardSizes.XS, id:"card-0"});
+    socks.push({text: "two", size: CardSizes.TO_DO, id:"card-1"});
+    socks.push({text: "three", size: CardSizes.TO_DO, id:"card-2"});
+    socks.push({text: "four", size: CardSizes.TO_DO, id:"card-3"});
 
     localStorage.removeItem(CARD_STORAGE);
     localStorage[CARD_STORAGE] = JSON.stringify(socks);
