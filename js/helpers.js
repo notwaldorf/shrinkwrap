@@ -1,18 +1,14 @@
 var Constants = new function() {
 	this.CardSizes = {
-                  XS : "xs", 
-                  S: "s", 
-                  M: "m", 
-                  L: "l", 
-                  XL: "xl",
+                  inprogress : "inprogress", 
+                  review: "review", 
+                  done: "done",
                   TO_DO: "todo"
                   };
 	this.columns = [
-                    '#column-xs',
-                    '#column-s',
-                    '#column-m',
-                    '#column-l',
-                    '#column-xl',
+                    '#column-inprogress',
+                    '#column-review',
+                    '#column-done',
                     '#column-todo'];
   this.serverUrl = 'ws://127.0.0.1:9000';
   this.serverPort = 9000;
@@ -21,7 +17,7 @@ var Constants = new function() {
 var Helpers = new function() {
 	this.knitFakeSocks = function () {
 	    var socks = [];
-	    socks.push({text: "one", size: Constants.CardSizes.XS, id:"card-0"});
+	    socks.push({text: "one", size: Constants.CardSizes.TO_DO, id:"card-0"});
 	    socks.push({text: "two", size: Constants.CardSizes.TO_DO, id:"card-1"});
 	    socks.push({text: "three", size: Constants.CardSizes.TO_DO, id:"card-2"});
 	    socks.push({text: "four", size: Constants.CardSizes.TO_DO, id:"card-3"});
