@@ -1,4 +1,7 @@
 var Constants = new function() {
+  // if you want different columns, you need to modify both CardSize and columns
+  // i recommend naming the column id's as column-someCardSizeDefinedInCardSizes
+  // which would make the columnIdPrefix = column-
 	this.CardSizes = {
                   XS : "xs", 
                   S: "s", 
@@ -14,6 +17,7 @@ var Constants = new function() {
                     '#column-l',
                     '#column-xl',
                     '#column-todo'];
+  this.columnIdPrefix = "column-";
   this.serverUrl = 'ws://127.0.0.1:9000';
   this.serverPort = 9000;
 }

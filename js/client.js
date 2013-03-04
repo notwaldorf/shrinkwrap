@@ -11,7 +11,8 @@ $(function() {
   // Event handlers etc
   // ==========================
   function makeThingsGo() {
-
+    // resize the suit to fit however many columns there are
+    $('.suit').css('width', $('.suit').children().length * 175);
     $('#new-card-box').hide();
     $('#server-ok').hide();
     $('#server-down').hide();
@@ -60,7 +61,7 @@ $(function() {
         receive: function(event, ui) {
           var newColumn = ui.item.parent();
           var id = ui.item.attr('id');
-          var newSize = newColumn.attr('id').substr(7);
+          var newSize = newColumn.attr('id').substr(Constants.columnIdPrefix.length);
           moveCard(id, newSize);
         }
       });
