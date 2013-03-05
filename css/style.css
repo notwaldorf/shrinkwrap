@@ -1,6 +1,7 @@
 body {
 	font-family: 'Exo', sans-serif;
-	background-color: #fafafa;
+	background-color: #f6f6f6;
+	background: url('../img/pw_maze_white.png');
 }
 
 p{
@@ -13,6 +14,7 @@ h1, h2.big {
 	letter-spacing: -3px;
 	line-height: 80px;
 	margin-bottom: 0;
+	color: black;
 	text-shadow: 0px 1px 0px white;
 }
 
@@ -36,8 +38,8 @@ h1, h2.big {
 	margin: 0;
 	padding: 10px;
 	float: left;
-	border: 1px dashed #b9b9b9;
-	border-radius: 3px;
+	background-color: #f6f6f6;
+	border-radius: 8px;
 	margin-left: 5px;
 	margin-right: 5px;
 	text-align: center;
@@ -50,14 +52,15 @@ h1, h2.big {
 	width: 120px;
 	word-wrap: break-word;
 	cursor: pointer;
-	background-color: #fff;
-	border: 1px solid #b9b9b9;
-	border-radius: 3px;
+	background-color: white;
+	color: black;
+	border: 0px solid #64b6c8;
+	border-radius: 5px;
 }
 
 .draggable li:hover {
-	border-color: #58a7ef;
-	box-shadow: 0 0 4px #58a7ef;
+	border-color: #64b6c8;
+	box-shadow: 0 0 4px #64b6c8;
 }
 
 .card-ghost {
@@ -66,7 +69,8 @@ h1, h2.big {
 }
 
 .draggable .column-title {
-	background-color: #fafafa;
+	background-color: transparent;
+	color: #f5b540;
 	border: none;
 	cursor: default;
 	font-weight: 700;
@@ -99,7 +103,7 @@ h1, h2.big {
 
 .link-btn, .card-btn{
 	text-decoration: none;
-	color: #b9b9b9;
+	color: #8cb2ba;
 	cursor: pointer;
 	position: relative;
 }
@@ -108,10 +112,10 @@ h1, h2.big {
 	float: right;
 }
 
-.link-btn:hover, .card-btn:hover{
-	color: #599ecd;
+.link-btn:hover, .card-btn:hover {
+	color: #c96277;
+	text-shadow: none;
 }
-
 /*************************
  * server status
  *************************/
@@ -125,7 +129,7 @@ h1, h2.big {
 	color: green;
 }
 #server-down {
-	color: red;
+	color: #c96277;
 }
 /*************************
  * resets
