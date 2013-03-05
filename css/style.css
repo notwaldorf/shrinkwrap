@@ -1,10 +1,12 @@
 body {
-	font-family: 'Exo', sans-serif;
+	font-family: Verdana, sans-serif;
 	background-color: #f6f6f6;
+	background: url('../img/checkered_pattern.png');
 	background: url('../img/pw_maze_white.png');
 }
 
 h1, h2.big {
+	font-family: 'Exo', sans-serif;
 	font-size: 50px;
 	font-weight: 200;
 	letter-spacing: -3px;
@@ -71,6 +73,7 @@ h1, h2.big {
 	color: #f58d40;
 	border: none;
 	cursor: default;
+	font-family: 'Exo', sans-serif;
 	font-weight: 700;
 	font-size: 20px;
 	text-transform: uppercase;
