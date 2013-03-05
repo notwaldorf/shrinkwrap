@@ -31,7 +31,8 @@ $(function() {
     });
 
     $('#save-card').click(function(){
-      addCard($('#card-text').val());
+      var text = $('#card-text').val().replace('<script>', '').replace('</script>', '');
+      addCard(text);
       $("#new-card-box").hide('fast');
     });
 
@@ -170,6 +171,7 @@ $(function() {
     else
     {
       ClientStorage.clearAll(); 
+      DisplayElf.showAll();
     }
   }
   

@@ -7,6 +7,8 @@ var ClientStorage = new function(){
 
 	this.add = function(card) {
 		card.id = this.generateId();
+		card.text = card.text.replace('<script>', '').replace('</script>', '');
+      
 		var cards = this.getAll();
     	cards.push(card);
 
