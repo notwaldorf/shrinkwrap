@@ -60,7 +60,7 @@ $(function() {
           ui.placeholder.css("background-color", "transparent");
           ui.placeholder.css("border-style", "dashed");
           ui.placeholder.css("border-width", "1px");
-          
+          ui.placeholder.css("border-color", "#b9b9b9");
         },
         receive: function(event, ui) {
           var newColumn = ui.item.parent();
