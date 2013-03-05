@@ -27,7 +27,15 @@ var ClientStorage = new function(){
 	this.move = function(card) {
 		var cards = this.getAll();
 	    var index = cards.findCard(card.id);
-	    if (index != -1 ) cards[index].size = card.size;
+
+	    if (index != -1 ) {
+	    	var cardToMove = cards[index];
+	    	cardToMove.size = card.size;
+	    	cards.remove(index);
+
+	    	var insertAfter = cards.findCard(card.insertAfter);
+	    	cards.insert(insertAfter + 1, cardToMove);
+	    }
 
 	    this.updateIfNeeded(cards);
   	}
@@ -46,7 +54,13 @@ var ClientStorage = new function(){
 
 	this.getAll = function() {
   		if (!this.IS_LOCAL_ONLY){
-  			this.totalCards = this.serverCards.length;
+  			// we actually need to get the max id to figure out what the next id should be
+  			var maxId = 0;
+  			for (var i = 0; i < this.serverCards.length; i++) {
+  				var thisId = parseInt(this.serverCards[i].id.substring(5));
+  				maxId = Math.max(maxId, thisId);
+  			}
+  			this.totalCards = maxId + 1;
   			return this.serverCards;
   		}
 

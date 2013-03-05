@@ -61,11 +61,12 @@ $(function() {
           ui.placeholder.css("border-width", "1px");
           ui.placeholder.css("border-color", "#b9b9b9");
         },
-        receive: function(event, ui) {
+        stop: function(event, ui) {
           var newColumn = ui.item.parent();
           var id = ui.item.attr('id');
+          var previousSibling = ui.item.prev().attr('id');
           var newSize = newColumn.attr('id').substr(Constants.columnIdPrefix.length);
-          moveCard(id, newSize);
+          moveCard(id, newSize, previousSibling);
         }
       });
 
@@ -148,9 +149,9 @@ $(function() {
     }
   } 
 
-  function moveCard(id, newSize)
+  function moveCard(id, newSize, insertAfter)
   {
-    var resizedCard = {id:id, size:newSize};
+    var resizedCard = {id:id, size:newSize, insertAfter:insertAfter};
     if (IS_SERVER_OK)
     {
       connection.send(JSON.stringify({action:"move", data:resizedCard}))

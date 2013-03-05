@@ -48,6 +48,9 @@ Array.prototype.remove = function(from, to) {
 	return this.push.apply(this, rest);
 };
 
+Array.prototype.insert = function (index, item) {
+  this.splice(index, 0, item);
+}
 
 // make available to server
 if (typeof(module) !== 'undefined')
