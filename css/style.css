@@ -39,6 +39,8 @@ h1, h2.big {
 	padding: 10px;
 	float: left;
 	background-color: #f6f6f6;
+	border-bottom: 1px solid #b9b9b9;
+	border-top: 1px solid white;
 	border-radius: 8px;
 	margin-left: 5px;
 	margin-right: 5px;
@@ -54,7 +56,7 @@ h1, h2.big {
 	cursor: pointer;
 	background-color: white;
 	color: black;
-	border: 0px solid #64b6c8;
+	border: 1px solid #d9d9d9;
 	border-radius: 5px;
 }
 
@@ -70,7 +72,7 @@ h1, h2.big {
 
 .draggable .column-title {
 	background-color: transparent;
-	color: #f5b540;
+	color: #f58d40;
 	border: none;
 	cursor: default;
 	font-weight: 700;
@@ -103,7 +105,7 @@ h1, h2.big {
 
 .link-btn, .card-btn{
 	text-decoration: none;
-	color: #8cb2ba;
+	color: #365da3;
 	cursor: pointer;
 	position: relative;
 }
@@ -113,7 +115,7 @@ h1, h2.big {
 }
 
 .link-btn:hover, .card-btn:hover {
-	color: #c96277;
+	color: #e94457;
 	text-shadow: none;
 }
 /*************************
@@ -129,7 +131,7 @@ h1, h2.big {
 	color: green;
 }
 #server-down {
-	color: #c96277;
+	color: #e94457;
 }
 /*************************
  * resets
