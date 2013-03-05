@@ -58,6 +58,8 @@ $(function() {
           // for some reason the placeholder style isn't actually applied
           ui.placeholder.css("background-color", "transparent");
           ui.placeholder.css("border-style", "dashed");
+          ui.placeholder.css("border-width", "1px");
+          
         },
         receive: function(event, ui) {
           var newColumn = ui.item.parent();
