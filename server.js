@@ -4,12 +4,14 @@ var WebSocketServer = require('websocket').server;
 var http = require('http');
 var static = require('node-static');
 var Constants = require('./js/helpers');
-var ClientStorage = require('./js/client-storage');
+var CardStorage = require('./js/card-storage');
 var file = new(static.Server)('./');
 var fs = require('fs');
 
+
 var clients = [];
-var dbFileName = "./" + ClientStorage.LOCATION;
+var serverDB = new CardStorage(true);
+var dbFileName = "./" + serverDB.storageName;
 
 // HTTP Server
 var httpServer = http.createServer(function(request, response) {
@@ -25,7 +27,7 @@ var httpServer = http.createServer(function(request, response) {
             console.log("Can't read db: ", err);
         }
         else {
-            ClientStorage.serverCards = JSON.parse(data);
+            serverDB.serverCards = JSON.parse(data);
         }
     });
 
@@ -41,7 +43,7 @@ wsServer.on('request', function(request) {
     var connection = request.accept(null, request.origin); 
     clients.push(connection);
 
-    connection.sendUTF(JSON.stringify(ClientStorage.getAll()));
+    connection.sendUTF(JSON.stringify(serverDB.getAll()));
 
     connection.on('message', function(message) {
         if (message.type === 'utf8') { // accept only text
@@ -54,20 +56,20 @@ wsServer.on('request', function(request) {
 
             switch (action) {
             case 'add':
-                ClientStorage.add(card);
+                serverDB.add(card);
                 break;
             case 'remove':
-                ClientStorage.remove(card);
+                serverDB.remove(card);
                 break;
             case 'move':
-                ClientStorage.move(card);
+                serverDB.move(card);
                 break;
             case 'clear':
-                ClientStorage.clearAll();
+                serverDB.clearAll();
                 break;
             }
         	
-        	var cardsAsText = JSON.stringify(ClientStorage.getAll());
+        	var cardsAsText = JSON.stringify(serverDB.getAll());
 
             // this bit is really gross and i should fix it asap
             fs.unlink(dbFileName);

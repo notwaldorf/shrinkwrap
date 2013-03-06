@@ -3,6 +3,8 @@ $(function() {
   // set up the web socket
   var IS_SERVER_OK = false;
   var connection;
+  var cardsDB;
+
   window.WebSocket = window.WebSocket || window.MozWebSocket;
 
   $(document).ready(makeThingsGo);
@@ -80,33 +82,33 @@ $(function() {
     connection.onopen = function () {
         ServerStatus.up();
         IS_SERVER_OK = true;
-        ClientStorage.IS_LOCAL_ONLY = false;
+        cardsDB = new CardStorage(true);
     };
 
     connection.onclose = function () {
         ServerStatus.down();
         IS_SERVER_OK = false;
-        ClientStorage.IS_LOCAL_ONLY = true;
+        cardsDB = new CardStorage(false);
 
         // for testing only
-        if (localStorage[ClientStorage.LOCATION] == undefined)
+        if (localStorage[cardsDB.storageName] == undefined)
         {
-           ClientStorage.generateTestingData();
+           cardsDB.generateTestingData();
         }   
-        DisplayElf.showAll(ClientStorage.getAll());   
+        DisplayElf.showAll(cardsDB.getAll());   
     };
 
     connection.onerror = function () {
         ServerStatus.down();
         IS_SERVER_OK = false;
-        ClientStorage.IS_LOCAL_ONLY = true;
+        cardsDB = new CardStorage(false);
         
         // for testing only
-        if (localStorage[ClientStorage.LOCATION] == undefined)
+        if (localStorage[cardsDB.storageName] == undefined)
         {
-           ClientStorage.generateTestingData();
+           cardsDB.generateTestingData();
         }   
-        DisplayElf.showAll(ClientStorage.getAll());   
+        DisplayElf.showAll(cardsDB.getAll());   
     }; 
 
     connection.onmessage = function (message) {
@@ -131,7 +133,7 @@ $(function() {
     }
     else
     {
-      newCard = ClientStorage.add(newCard);
+      newCard = cardsDB.add(newCard);
       DisplayElf.show(newCard);
     }
   }
@@ -144,7 +146,7 @@ $(function() {
     }
     else
     {
-      ClientStorage.remove(id);  
+      cardsDB.remove(id);  
       DisplayElf.vaporize(id);
     }
   } 
@@ -158,7 +160,7 @@ $(function() {
     }
     else
     {
-      ClientStorage.move(resizedCard);  
+      cardsDB.move(resizedCard);  
     }
   } 
 
@@ -170,7 +172,7 @@ $(function() {
     }
     else
     {
-      ClientStorage.clearAll(); 
+      cardsDB.clearAll(); 
       DisplayElf.showAll();
     }
   }
