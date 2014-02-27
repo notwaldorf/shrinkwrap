@@ -67,6 +67,9 @@ wsServer.on('request', function(request) {
             case 'clear':
                 serverDB.clearAll();
                 break;
+            case 'update':
+                serverDB.update(card);
+                break;
             }
         	
         	var cardsAsText = JSON.stringify(serverDB.getAll());

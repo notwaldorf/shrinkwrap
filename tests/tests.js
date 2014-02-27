@@ -191,6 +191,19 @@ test( "can generate sequential ids", function() {
 	equal(cardDB.nextCardID, 2);
 });
 
+test( "can update a card", function(){
+  var cardDB = makeTestStorage();
+  var card0 = {size:"s", text:"first"};
+
+  card0 = cardDB.add(card0);
+  equal(cardDB.nextCardID, 1);
+  card0.text = "Different text!"
+  cardDB.update(card0)
+  var allTheCards = cardDB.getAll();
+
+  deepEqual(allTheCards[0], {size:"s", id:"card-0", text: "Different text!"});
+});
+
 
 
 
