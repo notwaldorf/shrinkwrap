@@ -198,6 +198,7 @@ $(function() {
 
   $(document).on('dblclick', ".card span", function(){
     $(this).html('<input class="card-edit" type="text" value="'+$(this).text()+'"/>')
+    $(this).find('input').width( $(this).find('input').val().length +'em' )
   })
 
   $(document).on('keypress', ".card-edit",function(e){
