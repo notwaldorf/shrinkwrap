@@ -197,7 +197,7 @@ $(function() {
   // ==========================
 
   $(document).on('dblclick', ".card span", function(){
-    $(this).html('<input class="card-edit" type="text" value="'+$(this).text()+'"/>')
+    $(this).html('<input title="Press enter to submit" class="card-edit" type="text" value="'+$(this).text()+'"/>')
     $(this).find('input').width( $(this).find('input').val().length +'em' )
   })
 
