@@ -179,11 +179,9 @@ $(function() {
 
   function updateCard(id, newText)
   {
-    console.log(id)
     var updateCard = {id:id, text:newText, size:Constants.CardSizes.TO_DO};
     if ( IS_SERVER_OK)
     {
-      console.log(updateCard)
       connection.send(JSON.stringify({action:"update", data:updateCard}))
     }
     else
@@ -207,7 +205,7 @@ $(function() {
       var newText = this.value
       var jThis = $(this);
       var cardId = jThis.parent().parent().attr('id');
-      
+
       this.outerHTML = '<span>'+newText+'</span>'
       updateCard(cardId, this.value);
     }
