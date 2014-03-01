@@ -176,7 +176,40 @@ $(function() {
       DisplayElf.showAll();
     }
   }
+
+  function updateCard(id, newText)
+  {
+    var updateCard = {id:id, text:newText, size:Constants.CardSizes.TO_DO};
+    if ( IS_SERVER_OK)
+    {
+      connection.send(JSON.stringify({action:"update", data:updateCard}))
+    }
+    else
+    {
+      cardsDB.update(updateCard)
+      DisplayElf.show(updateCard)
+    }
+  }
   
+
+  // ==========================
+  // Edit Things
+  // ==========================
+
+  $(document).on('dblclick', ".card span", function(){
+    $(this).html('<textarea title="Press enter to submit" class="card-edit">'+$(this).text()+'</textarea>')
+  })
+
+  $(document).on('keypress', ".card-edit",function(e){
+    if(e.which == 13){
+      var newText = this.value
+      var jThis = $(this);
+      var cardId = jThis.parent().parent().attr('id');
+
+      this.outerHTML = '<span>'+newText+'</span>'
+      updateCard(cardId, this.value);
+    }
+  })
 
   // ==========================
   // Display things

@@ -101,6 +101,14 @@ h1, h2.big {
 	margin-bottom: 5px;
 }
 
+.card-edit {
+	width: 110px;
+	height: 60px;
+	display: block;
+	padding: 0 5px 0 5px;
+	margin-bottom: 5px;
+}
+
 .link-btn, .card-btn{
 	text-decoration: none;
 	color: #365da3;

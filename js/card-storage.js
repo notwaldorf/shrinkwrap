@@ -41,6 +41,18 @@ CardStorage.prototype.move = function(card) {
     this.updateIfNeeded(cards);
 }
 
+CardStorage.prototype.update = function(card) {
+	var cards = this.getAll();
+	var index = cards.findCard(card.id);
+
+	if( index != -1) {
+		var cardToUpdate = cards[index];
+		cardToUpdate.text = card.text.replace('<script>', '').replace('</script>', '');	
+	}
+	this.updateIfNeeded(cards);
+    return card
+}
+
  CardStorage.prototype.clearAll = function() {
 	if (!this.isUsingNodeServer)
 	{
