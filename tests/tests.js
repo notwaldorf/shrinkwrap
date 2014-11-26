@@ -203,19 +203,3 @@ test( "can update a card", function(){
 
   deepEqual(allTheCards[0], {size:"s", id:"card-0", text: "Different text!"});
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
